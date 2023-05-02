@@ -1,0 +1,18 @@
+import os
+
+def list_folders(path):
+    # Récupération de la liste des fichiers et dossiers dans le répertoire donné
+    items = os.listdir(path)
+    
+    # Itération sur tous les éléments de la liste
+    for item in items:
+        # Chemin complet de l'élément
+        full_path = os.path.join(path, item)
+        
+        # Si c'est un dossier, on l'affiche et on explore récursivement son contenu
+        if os.path.isdir(full_path):
+            print(full_path)
+            list_folders(full_path)
+
+# Appel de la fonction en spécifiant le chemin du disque dur à explorer
+list_folders("C:/")
