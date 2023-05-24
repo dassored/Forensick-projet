@@ -1,0 +1,46 @@
+import os
+import tkinter as tk
+from tkinter import messagebox
+
+def search_folders():
+    keyword = keyword_entry.get()
+    directory = directory_entry.get()
+
+    found_folders = []
+
+    for root, dirs, files in os.walk(directory):
+        for folder in dirs:
+            if keyword.lower() in folder.lower():
+                found_folders.append(os.path.join(root, folder))
+    
+    if found_folders:
+        messagebox.showinfo("Résultats de la recherche", "Dossiers correspondants trouvés :\n\n{}".format('\n'.join(found_folders)))
+    else:
+        messagebox.showinfo("Résultats de la recherche", "Aucun dossier correspondant n'a été trouvé.")
+
+# Création de la fenêtre principale
+window = tk.Tk()
+window.title("Recherche de dossiers")
+
+# Cadre pour les champs de saisie
+input_frame = tk.Frame(window)
+input_frame.pack(pady=20)
+
+# Étiquette et champ de saisie pour le mot-clé
+keyword_label = tk.Label(input_frame, text="Mot-clé: ")
+keyword_label.grid(row=0, column=0, padx=5, pady=5)
+keyword_entry = tk.Entry(input_frame)
+keyword_entry.grid(row=0, column=1, padx=5, pady=5)
+
+# Étiquette et champ de saisie pour le répertoire de départ
+directory_label = tk.Label(input_frame, text="Répertoire de départ: ")
+directory_label.grid(row=1, column=0, padx=5, pady=5)
+directory_entry = tk.Entry(input_frame)
+directory_entry.grid(row=1, column=1, padx=5, pady=5)
+
+# Bouton de recherche
+search_button = tk.Button(window, text="Rechercher", command=search_folders)
+search_button.pack(pady=10)
+
+# Affichage de la fenêtre principale
+window.mainloop()
