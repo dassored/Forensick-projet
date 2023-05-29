@@ -1,0 +1,54 @@
+import tkinter as tk
+from tkinter import filedialog
+import pytsk3
+
+def recover_deleted_files(image_path):
+    # Ouvrir l'image du disque
+    image = pytsk3.Img_Info(image_path)
+
+    # Ouvrir la partition du système de fichiers
+    filesystem = pytsk3.FS_Info(image, 0)
+
+    # Parcourir tous les fichiers dans la partition
+    for directory_entry in filesystem.open_dir(path='/'):
+        # Vérifier si le fichier est supprimé
+        if directory_entry.info.meta.type == pytsk3.TSK_FS_META_TYPE_DELETED:
+            file_inode = directory_entry.info.meta.addr
+            file_name = directory_entry.info.name.name.decode('utf-8')
+
+            # Récupérer les informations sur le fichier supprimé
+            file_info = filesystem.open_meta(inode=file_inode)
+            file_size = file_info.info.meta.size
+
+            # Afficher les informations du fichier supprimé
+            info_text.insert(tk.END, f"Nom du fichier: {file_name}\n")
+            info_text.insert(tk.END, f"Taille du fichier: {file_size}\n")
+            info_text.insert(tk.END, f"Inode du fichier: {file_inode}\n")
+            info_text.insert(tk.END, "\n")
+
+def browse_image():
+    # Ouvrir la boîte de dialogue pour sélectionner une image de disque
+    image_path = filedialog.askopenfilename(title="Sélectionner une image de disque", filetypes=(("Image de disque", "*.dd"), ("Tous les fichiers", "*.*")))
+
+    # Vérifier si un fichier a été sélectionné
+    if image_path:
+        # Effacer le texte précédent
+        info_text.delete('1.0', tk.END)
+
+        # Récupérer les informations sur les fichiers supprimés
+        recover_deleted_files(image_path)
+
+# Créer la fenêtre principale
+window = tk.Tk()
+window.title("Récupération des fichiers supprimés")
+
+# Bouton pour parcourir l'image de disque
+browse_button = tk.Button(window, text="Parcourir", command=browse_image)
+browse_button.pack(pady=10)
+
+# Zone de texte pour afficher les informations
+info_text = tk.Text(window, height=10, width=50)
+info_text.pack()
+
+# Lancer la boucle principale de l'interface graphique
+window.mainloop()
