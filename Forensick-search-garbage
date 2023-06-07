@@ -1,0 +1,21 @@
+import os
+import winshell
+
+# Chemin vers le dossier de la corbeille
+recycle_bin = winshell.recycle_bin()
+
+# Parcours des fichiers supprimés dans la corbeille
+deleted_files = []
+for deleted_file in recycle_bin:
+    file_path = deleted_file.original_filename()
+    deleted_files.append(file_path)
+
+# Enregistrement des chemins des fichiers supprimés dans un fichier texte
+output_file = "Forensic_corbeille.txt"
+with open(output_file, "w") as file:
+    file.write("Fichiers supprimés dans la corbeille :\n")
+    for file_path in deleted_files:
+        file.write(file_path + "\n")
+
+print(f"Liste des fichiers supprimés dans la corbeille enregistrée dans le fichier {output_file}.")
+#pip install winshell
