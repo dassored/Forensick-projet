@@ -1,0 +1,54 @@
+import os
+import email
+import tkinter as tk
+from tkinter import filedialog, messagebox
+
+def browse_directory():
+    directory = filedialog.askdirectory(title="Sélectionnez le répertoire contenant les fichiers de messagerie")
+    if directory:
+        process_emails(directory)
+
+def process_emails(directory):
+    for filename in os.listdir(directory):
+        if filename.endswith('.eml'):
+            file_path = os.path.join(directory, filename)
+            parse_email(file_path)
+
+def parse_email(file_path):
+    with open(file_path, 'rb') as file:
+        msg = email.message_from_binary_file(file)
+
+        # Extraction des métadonnées
+        sender = msg['From']
+        recipient = msg['To']
+        subject = msg['Subject']
+        date = msg['Date']
+
+        messagebox.showinfo("Métadonnées", f"De: {sender}\nÀ: {recipient}\nObjet: {subject}\nDate: {date}")
+
+        # Extraction des pièces jointes
+        attachments = []
+        if msg.get_content_maintype() == 'multipart':
+            for part in msg.walk():
+                if part.get_content_maintype() == 'multipart':
+                    continue
+                if part.get('Content-Disposition') is None:
+                    continue
+
+                attachment_name = part.get_filename()
+                attachments.append(attachment_name)
+
+        if attachments:
+            messagebox.showinfo("Pièces jointes", "\n".join(attachments))
+        else:
+            messagebox.showinfo("Pièces jointes", "Aucune pièce jointe trouvée.")
+
+# Interface graphique
+root = tk.Tk()
+root.title("Analyseur de messagerie électronique")
+root.geometry("400x200")
+
+browse_button = tk.Button(root, text="Parcourir", command=browse_directory)
+browse_button.pack(pady=50)
+
+root.mainloop()
