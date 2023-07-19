@@ -1,0 +1,31 @@
+rom docx import document
+
+def extract_metadata (file_path):
+
+    #charger le document word
+    doc = Document(file_path)
+
+    # Extraire les métadonnées
+    metadata = {}
+    core_properties = doc.core_properties
+
+    metadata['Titre'] = core_properties.title
+    metadata['Auteur'] = core_properties.author
+    metadata['Sujet'] = core_properties.subject
+    metadata['Mots clés'] = core_properties.keywords
+    metadata['Dernier enregistrement par'] = core_properties.last_modified_by
+    metadata['Date de création'] = core_properties.created
+    metadata['Date de dernière modification'] = core_properties.modified
+    metadata['Nombre de mots'] = len(doc.element.xpath('//w:t'))
+
+    return metadata
+
+# Chemin du fichier Word à analyser
+file_path = 'chemin/vers/votre/document.docx'
+
+# Appel de la fonction d'extraction de métadonnées
+metadata = extract_metadata(file_path)
+
+# Affichage des métadonnées extraites
+for key, value in metadata.items():
+    print(f'{key}: {value}')
